@@ -10,6 +10,8 @@ testData <- read.table("./getdata-projectfiles-UCI HAR Dataset/UCI HAR Dataset/t
 testLabel <- read.table("./getdata-projectfiles-UCI HAR Dataset/UCI HAR Dataset/test/Y_test.txt")
 testSub <- read.table("./getdata-projectfiles-UCI HAR Dataset/UCI HAR Dataset/test/subject_test.txt")
 
+
+
 #check that the data sets are joinable in dimentions
 dim(trainData)
 dim(testData)
@@ -65,9 +67,9 @@ CleenData <- cbind(SubJoin, LabelJoin, DataJoin)
 write.table(CleenData, "data_set_1_merged.txt", row.name=FALSE)
 
 
-#And the second set of data 
-SubLength <- length(table(SubJoin)) # 30
-ActLength <- dim(Aktivity)[1] # 6
+#And the second set of data with loop (as i could not get dplyr to play ball.)
+SubLength <- length(table(SubJoin))
+ActLength <- dim(Aktivity)[1]
 ColLength <- dim(CleenData)[2]
 output <- matrix(NA, nrow=SubLength*ActLength, ncol=ColLength) 
 output <- as.data.frame(result)
@@ -77,12 +79,11 @@ for(i in 1:SubLength) {
     for(j in 1:ActLength) {
         output[Nr, 1] <- sort(unique(SubJoin)[, 1])[i]
         output[Nr, 2] <- Aktivity[j, 2]
-        bool1 <- i == CleenData$subject
-        bool2 <- Aktivity[j, 2] == CleenData$activity
-        output[Nr, 3:ColLength] <- colMeans(CleenData[bool1&bool2, 3:ColLength])
+        bl1 <- i == CleenData$subject
+        bl2 <- Aktivity[j, 2] == CleenData$activity
+        output[Nr, 3:ColLength] <- colMeans(CleenData[bl1&bl2, 3:ColLength])
         Nr <- Nr + 1
     }
 }
 head(output)
 write.table(output, "data_set_2_cleen.txt")
-
